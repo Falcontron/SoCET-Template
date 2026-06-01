@@ -1,0 +1,49 @@
+name: AFT Synthesis
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  synth:
+    name: Smoke Synthesis
+    runs-on: ubuntu-latest
+
+    container:
+      image: ghcr.io/falcontron/socet-template-ci:latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Check synthesis tool versions
+        run: |
+          verilator --version
+          sv2v --version
+          yosys -V
+
+      - name: Run setup
+        run: |
+          export PYTHONPATH=""
+          ./setup.sh
+
+      - name: Run build
+        run: |
+          export PYTHONPATH=""
+          ./build.sh
+
+      - name: Run smoke synthesis
+        run: |
+          export PYTHONPATH=""
+          ./synth.sh
+
+      - name: Upload synthesis reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: aft-synth-out
+          path: synth_out/
+          if-no-files-found: error
