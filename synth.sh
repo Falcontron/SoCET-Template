@@ -47,8 +47,7 @@ echo "Output directory: $OUT_DIR"
 #   FuseSoC build metadata -> sv2v -> Yosys -> reports
 #
 # It intentionally synthesizes a small known-good module instead of the full
-# AFT chip, because full-chip AFT currently trips a Yosys/sv2v issue in the
-# generated CSR logic.
+# AFT chip, because full-chip AFT currently trips a Yosys/sv2v issue in the CSR logic.
 # ============================================================
 
 if [ "$SYNTH_MODE" = "smoke" ]; then
