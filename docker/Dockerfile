@@ -74,3 +74,6 @@ ENV PYTHONPATH=""
 WORKDIR /work
 
 CMD ["/bin/bash"]
+
+
+# opensta for timing and power
