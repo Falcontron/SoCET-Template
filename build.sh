@@ -73,39 +73,39 @@ if [ "${VERSION_HEADER_ENABLED:-0}" = "1" ]; then
 fi
 
 # ============================================================
-# Primary build
+# FuseSoC build
 # ============================================================
 
-if [ "${PRIMARY_BUILD_ENABLED:-1}" = "1" ]; then
-    if [ -n "${PRIMARY_BUILD_CMD:-}" ]; then
-        echo "Running custom primary build command"
-        bash -lc "$PRIMARY_BUILD_CMD"
+if [ "${FUSESOC_BUILD_ENABLED:-1}" = "1" ]; then
+    if [ -n "${FUSESOC_BUILD_CMD:-}" ]; then
+        echo "Running custom FuseSoC build command"
+        bash -lc "$FUSESOC_BUILD_CMD"
     else
         echo "Using fusesoc to build ${FUSESOC_TOOL:-verilator} model"
 
-        if [ -z "${BUILD_ROOT:-}" ]; then
-            echo "ERROR: PRIMARY_BUILD_ENABLED=1 but BUILD_ROOT is empty" >&2
+        if [ -z "${FUSESOC_BUILD_ROOT:-}" ]; then
+            echo "ERROR: FUSESOC_BUILD_ENABLED=1 but FUSESOC_BUILD_ROOT is empty" >&2
             exit 1
         fi
 
         if [ -z "${FUSESOC_TARGET:-}" ]; then
-            echo "ERROR: PRIMARY_BUILD_ENABLED=1 but FUSESOC_TARGET is empty" >&2
+            echo "ERROR: FUSESOC_BUILD_ENABLED=1 but FUSESOC_TARGET is empty" >&2
             exit 1
         fi
 
         if [ -z "${FUSESOC_TOOL:-}" ]; then
-            echo "ERROR: PRIMARY_BUILD_ENABLED=1 but FUSESOC_TOOL is empty" >&2
+            echo "ERROR: FUSESOC_BUILD_ENABLED=1 but FUSESOC_TOOL is empty" >&2
             exit 1
         fi
 
         if [ -z "${FUSESOC_CORE:-}" ]; then
-            echo "ERROR: PRIMARY_BUILD_ENABLED=1 but FUSESOC_CORE is empty" >&2
+            echo "ERROR: FUSESOC_BUILD_ENABLED=1 but FUSESOC_CORE is empty" >&2
             exit 1
         fi
 
         eval "EXTRA_ARGS=( ${FUSESOC_EXTRA_ARGS:-} )"
 
-        fusesoc --cores-root . run --setup --build --build-root "$BUILD_ROOT" \
+        fusesoc --cores-root . run --setup --build --build-root "$FUSESOC_BUILD_ROOT" \
             --target "$FUSESOC_TARGET" --tool "$FUSESOC_TOOL" \
             "$FUSESOC_CORE" \
             "${EXTRA_ARGS[@]}"
@@ -113,29 +113,51 @@ if [ "${PRIMARY_BUILD_ENABLED:-1}" = "1" ]; then
 fi
 
 # ============================================================
-# Secondary build
+# Optional Xcelium build
 # ============================================================
 
-if [ "${SECONDARY_BUILD_ENABLED:-0}" = "1" ]; then
-    if [ -n "${SECONDARY_BUILD_CMD:-}" ]; then
-        echo "Running custom secondary build command"
-        bash -lc "$SECONDARY_BUILD_CMD"
+if [ "${XCELIUM_BUILD_ENABLED:-0}" = "1" ]; then
+    if [ -n "${XCELIUM_BUILD_CMD:-}" ]; then
+        echo "Running custom Xcelium build command"
+        bash -lc "$XCELIUM_BUILD_CMD"
     else
-        if [ "${SECONDARY_FUSESOC_TOOL:-}" = "xcelium" ]; then
-            if hash xrun; then
-                fusesoc --cores-root . run --setup --build --build-root "$SECONDARY_BUILD_ROOT" \
-                    --target "$FUSESOC_TARGET" --tool "$SECONDARY_FUSESOC_TOOL" \
+        if [ -z "${XCELIUM_BUILD_ROOT:-}" ]; then
+            echo "ERROR: XCELIUM_BUILD_ENABLED=1 but XCELIUM_BUILD_ROOT is empty" >&2
+            exit 1
+        fi
+
+        if [ -z "${FUSESOC_TARGET:-}" ]; then
+            echo "ERROR: XCELIUM_BUILD_ENABLED=1 but FUSESOC_TARGET is empty" >&2
+            exit 1
+        fi
+
+        if [ -z "${XCELIUM_TOOL:-}" ]; then
+            echo "ERROR: XCELIUM_BUILD_ENABLED=1 but XCELIUM_TOOL is empty" >&2
+            exit 1
+        fi
+
+        if [ -z "${FUSESOC_CORE:-}" ]; then
+            echo "ERROR: XCELIUM_BUILD_ENABLED=1 but FUSESOC_CORE is empty" >&2
+            exit 1
+        fi
+
+        eval "XCELIUM_ARGS=( ${XCELIUM_EXTRA_ARGS:-} )"
+
+        if [ "${XCELIUM_TOOL:-}" = "xcelium" ]; then
+            if hash xrun 2>/dev/null; then
+                fusesoc --cores-root . run --setup --build --build-root "$XCELIUM_BUILD_ROOT" \
+                    --target "$FUSESOC_TARGET" --tool "$XCELIUM_TOOL" \
                     "$FUSESOC_CORE" \
-                    ${SECONDARY_FUSESOC_EXTRA_ARGS:-}
+                    "${XCELIUM_ARGS[@]}"
             else
                 echo "No xrun, skipping xcelium build"
             fi
         else
-            echo "Using fusesoc to build secondary ${SECONDARY_FUSESOC_TOOL} model"
-            fusesoc --cores-root . run --setup --build --build-root "$SECONDARY_BUILD_ROOT" \
-                --target "$FUSESOC_TARGET" --tool "$SECONDARY_FUSESOC_TOOL" \
+            echo "Using fusesoc to build Xcelium/secondary ${XCELIUM_TOOL} model"
+            fusesoc --cores-root . run --setup --build --build-root "$XCELIUM_BUILD_ROOT" \
+                --target "$FUSESOC_TARGET" --tool "$XCELIUM_TOOL" \
                 "$FUSESOC_CORE" \
-                ${SECONDARY_FUSESOC_EXTRA_ARGS:-}
+                "${XCELIUM_ARGS[@]}"
         fi
     fi
 fi
