@@ -24,7 +24,7 @@ fi
 echo "Starting build for ${PROJECT_NAME:-project}"
 
 # ============================================================
-# Optional custom pre-build command
+# if theres extra stuff
 # ============================================================
 
 if [ -n "${PRE_BUILD_CMD:-}" ]; then
@@ -33,7 +33,7 @@ if [ -n "${PRE_BUILD_CMD:-}" ]; then
 fi
 
 # ============================================================
-# Config step
+# config
 # ============================================================
 
 if [ "${CONFIG_STEP_ENABLED:-1}" = "1" ]; then
@@ -60,7 +60,7 @@ if [ "${CONFIG_STEP_ENABLED:-1}" = "1" ]; then
 fi
 
 # ============================================================
-# Version header generation
+# version header
 # ============================================================
 
 if [ "${VERSION_HEADER_ENABLED:-0}" = "1" ]; then
@@ -73,7 +73,7 @@ if [ "${VERSION_HEADER_ENABLED:-0}" = "1" ]; then
 fi
 
 # ============================================================
-# FuseSoC build
+# FuseSoC
 # ============================================================
 
 if [ "${FUSESOC_BUILD_ENABLED:-1}" = "1" ]; then
@@ -113,7 +113,7 @@ if [ "${FUSESOC_BUILD_ENABLED:-1}" = "1" ]; then
 fi
 
 # ============================================================
-# Optional Xcelium build
+# Xcelium
 # ============================================================
 
 if [ "${XCELIUM_BUILD_ENABLED:-0}" = "1" ]; then
@@ -163,7 +163,7 @@ if [ "${XCELIUM_BUILD_ENABLED:-0}" = "1" ]; then
 fi
 
 # ============================================================
-# Optional custom post-build command
+# if theres extra stuff
 # ============================================================
 
 if [ -n "${POST_BUILD_CMD:-}" ]; then
