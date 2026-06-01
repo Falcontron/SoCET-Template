@@ -31,7 +31,8 @@ find . \
     -o -path "./aft_out_xcelium" \
     -o -path "./fusesoc_libraries" \
     -o -path "./.git" \
-    -o -path "./.venv" \) -prune \
+    -o -path "./.venv" \
+    -o -path "./logs" \) -prune \
     -o \( -name "*.sv" -o -name "*.svh" -o -name "*.v" -o -name "*.vh" \) \
     -print > verible_filelist.txt
 
@@ -40,4 +41,8 @@ if [ ! -s verible_filelist.txt ]; then
     exit 0
 fi
 
-verible-verilog-lint --rules_config=.rules.verible_lint $(cat verible_filelist.txt)
+if [ -f ".rules.verible_lint" ]; then
+    verible-verilog-lint --rules_config=.rules.verible_lint $(cat verible_filelist.txt)
+else
+    verible-verilog-lint $(cat verible_filelist.txt)
+fi
