@@ -55,7 +55,7 @@ install_fusesoc_libraries() {
 
     info_print "Installing FuseSoC libraries"
 
-    while read -r name repo sync_version; do
+    while read -r name repo sync_version || [ -n "${name:-}" ]; do
         [[ -z "${name:-}" ]] && continue
         [[ "$name" =~ ^# ]] && continue
 
