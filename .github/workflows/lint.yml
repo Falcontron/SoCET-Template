@@ -24,6 +24,6 @@ jobs:
         run: |
           verible-verilog-lint --version
 
-      - name: Run lint
+      - name: Run Verible lint
         run: |
           ./lint.sh
