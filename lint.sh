@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -e
 
 if [ ! -f "./config.env" ]; then
     echo "ERROR: config.env not found" >&2
@@ -14,21 +14,30 @@ if [ "${LINT_ENABLED:-1}" != "1" ]; then
 fi
 
 if [ -n "${LINT_CMD:-}" ]; then
-    echo "Running configured lint command"
+    echo "Running custom lint command"
     bash -lc "$LINT_CMD"
     exit 0
 fi
 
-mapfile -d '' lint_files < <(find . -type f \( -name '*.sv' -o -name '*.v' -o -name '*.svh' \) -print0)
+if ! command -v verible-verilog-lint >/dev/null 2>&1; then
+    echo "ERROR: verible-verilog-lint not found" >&2
+    exit 1
+fi
 
-if [ "${#lint_files[@]}" -eq 0 ]; then
-    echo "No Verilog/SystemVerilog sources found; skipping lint"
+echo "Running Verible lint"
+
+find . \
+    \( -path "./aft_out" \
+    -o -path "./aft_out_xcelium" \
+    -o -path "./fusesoc_libraries" \
+    -o -path "./.git" \
+    -o -path "./.venv" \) -prune \
+    -o \( -name "*.sv" -o -name "*.svh" -o -name "*.v" -o -name "*.vh" \) \
+    -print > verible_filelist.txt
+
+if [ ! -s verible_filelist.txt ]; then
+    echo "No Verilog/SystemVerilog files found"
     exit 0
 fi
 
-if command -v verible-verilog-lint >/dev/null 2>&1; then
-    echo "Running verible lint over ${#lint_files[@]} file(s)"
-    verible-verilog-lint --rules_config .rules.verible_lint "${lint_files[@]}"
-else
-    echo "verible-verilog-lint not found; skipping lint"
-fi
+verible-verilog-lint --rules_config=.rules.verible_lint $(cat verible_filelist.txt)
