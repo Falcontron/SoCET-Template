@@ -1,13 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# If a known-working legacy setup script exists, prefer running it for now.
-# This preserves the newer script while avoiding the build hang the user reported.
-if [ -x "./setup-old.sh" ]; then
-    echo "Found setup-old.sh; running it for compatibility"
-    exec ./setup-old.sh "$@"
-fi
-
 RED='\033[0;31m'
 BLUE='\033[0;34m'
 GREEN='\033[0;32m'
