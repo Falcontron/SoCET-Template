@@ -22,11 +22,42 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             git \
+            help2man \
+            perl \
             python3 \
             python3-pip \
             python3-venv \
-            build-essential \
-            verilator
+            make \
+            autoconf \
+            g++ \
+            flex \
+            bison \
+            ccache \
+            libfl2 \
+            libfl-dev \
+            zlib1g \
+            zlib1g-dev \
+            build-essential
+
+      - name: Build and install Verilator from source
+        run: |
+          git clone https://github.com/verilator/verilator.git
+          cd verilator
+
+          # Use the known-good version from your local machine.
+          # Your local version reports:
+          #   Verilator 5.048 2026-04-26 rev v5.048-56-gc233a3905
+          git checkout v5.048
+
+          autoconf
+          ./configure
+          make -j$(nproc)
+          sudo make install
+
+      - name: Check Verilator version
+        run: |
+          which verilator
+          verilator --version
 
       - name: Set up Python virtual environment
         run: |
