@@ -1,0 +1,5 @@
+[book]
+authors = ["Max Michalec", "Devin Singh", "William Cunningham", "Cole Nelson"]
+language = "en"
+src = "src"
+title = "RISCVBusiness Documentation"

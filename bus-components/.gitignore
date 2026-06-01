@@ -1,0 +1,11 @@
+**/*.bin
+**/*.gtkw
+**/*.hex
+**/*.tcl*
+**/.simvision
+**/build
+**/waves.shm/*
+**/xcelium.d/*
+**/xrun.history
+**/xrun.key
+**/xrun.log

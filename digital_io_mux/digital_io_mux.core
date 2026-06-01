@@ -1,0 +1,95 @@
+CAPI=2:
+name: socet:aft:digital_io_mux:0.1.0
+description: Digital Multiplexers to allow pins to serve multiple functions
+
+filesets:
+    rtl:
+        depend:
+            - "socet:bus-components:bus_protocol_if"
+            - "socet:bus-components:apb_if"
+            - "socet:bus-components:apb_completer"
+            - "socet:bus-components:apb_interconnect"
+        files:
+            - src/apb_slave_digital_mux.sv
+            - src/digital_mux.sv
+            - src/top_level_digital_mux.sv
+            - src/top_level_digital_mux_wrapper.sv
+        file_type: systemVerilogSource
+
+    tb:
+        files:
+            - tb/tb_top_level_digital_mux_wrapper.sv
+        file_type: systemVerilogSource
+
+targets:
+    default: &default
+        filesets:
+            - rtl
+        toplevel: top_level_digital_mux_wrapper
+    
+    sim:
+        <<: *default
+        description: Simulate w/TB
+        default_tool: xcelium 
+        filesets_append:
+            - tb
+        toplevel: 
+            - "!tool_verilator? (tb_top_level_digital_mux_wrapper)"
+            - "tool_verilator? (top_level_digital_mux_wrapper)"
+        tools:
+            xcelium:
+                xrun_options:
+                    - +xmtimescale+1ns/100ps
+            modelsim:
+                vsim_options:
+                    - -vopt
+                    - -voptargs='+acc'
+                    - -t ps
+            vcs:
+                vcs_options:
+                    - -assert svaext
+            verilator:
+                verilator_options:
+                    - --trace
+                    - --trace-fst
+                    - --trace-structs
+
+    fpga:
+        <<: *default
+        description: Synthesize for FPGA
+        default_tool: quartus
+        toplevel:
+            - top_level_digital_mux_wrapper
+        parameters:
+            - NUM_PINS=8
+            - SYNTHESIS=true
+        tools:
+            quartus:
+                family: Cyclone IV E
+                device: EP4CE115F29C7 
+                
+
+    lint:
+        filesets:
+            - lint_files
+        description: Linting
+        default_tool: veriblelint
+        toplevel: tb_top_level_digital_mux
+        tools:
+            veriblelint:
+                verible_lint_args: ['--autofix=inplace-interactive', '--rules_config_search']
+
+    format:
+        filesets:
+            - lint_files
+        description: Formatting
+        default_tool: veribleformat
+        toplevel: tb_top_level_digital_mux
+        tools:
+            veribleformat:
+                verible_format_args: ['--indentation_spaces=4', '--inplace']
+
+parameters:
+    SYNTHESIS:
+        datatype: bool
+        paramtype: vlogdefine

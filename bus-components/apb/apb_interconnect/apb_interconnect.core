@@ -1,0 +1,71 @@
+CAPI=2:
+
+name: socet:bus-components:apb_interconnect:0.2.1
+description: APB Decode/Multiplexing for single-requester
+
+filesets:
+    rtl:
+        depend:
+            - "socet:bus-components:apb_if"
+        files:
+            - src/apb_interconnect.sv
+        file_type: systemVerilogSource
+
+    verilator_tb:
+        files:
+            - src/apb_interconnect_wrapper.sv
+        file_type: systemVerilogSource
+
+    lint_files:
+        files:
+            - src/apb_interconnect.sv
+        file_type: systemVerilogSource
+
+targets:
+    default: &default
+        filesets:
+            - rtl
+        toplevel: apb_interconnect
+
+
+    sim:
+        <<: *default
+        description: Simulate w/TB
+        default_tool: verilator
+        parameters:
+            - NCOMPLETERS=8
+        toplevel:
+            - "!tool_verilator? (apb_interconnect)"
+            - "tool_verilator? (apb_interconnect_wrapper)"
+        filesets_append:
+            - "tool_verilator? (verilator_tb)"
+
+    lint:
+        filesets:
+            - lint_files
+        description: Linting
+        default_tool: veriblelint
+        toplevel: apb_interconnect
+        tools:
+            veriblelint:
+                verible_lint_args: ['--autofix=inplace-interactive', '--rules_config_search']
+    
+    format:
+        filesets:
+            - lint_files
+        description: Linting
+        default_tool: veribleformat
+        toplevel: apb_interconnect
+        tools:
+            veribleformat:
+                verible_format_args: ['--indentation_spaces=4', '--inplace']
+
+parameters:
+    NCOMPLETERS:
+        datatype: int
+        description: Number of completers downstream
+        paramtype: vlogparam
+
+    SYNTHESIS:
+        datatype: bool
+        paramtype: vlogdefine

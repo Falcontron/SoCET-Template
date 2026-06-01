@@ -1,0 +1,79 @@
+CAPI=2:
+name: socet:aft:io_pad:0.1.0
+description: io_pad module
+
+filesets:
+    rtl:
+        files:
+            - src/io_pad.sv
+        file_type: systemVerilogSource
+
+targets:
+    default: &default
+        filesets:
+            - rtl
+        toplevel: io_pad
+    
+    sim:
+        <<: *default
+        description: Simulate w/TB
+        default_tool: xcelium 
+        toplevel: 
+            - "tool_verilator? (io_pad)"
+        tools:
+            xcelium:
+                xrun_options:
+                    - +xmtimescale+1ns/100ps 
+            modelsim:
+                vsim_options:
+                    - -vopt
+                    - -voptargs='+acc'
+                    - -t ps
+            vcs:
+                vcs_options:
+                    - -assert svaext
+            verilator:
+                verilator_options:
+                    - --trace
+                    - --trace-fst
+                    - --trace-structs
+
+    fpga:
+        <<: *default
+        description: Synthesize for FPGA
+        default_tool: quartus
+        toplevel:
+            - io_pad
+        parameters:
+            - NUM_PINS=8
+            - SYNTHESIS=true
+        tools:
+            quartus:
+                family: Cyclone IV E
+                device: EP4CE115F29C7 
+                
+
+    lint:
+        filesets:
+            - lint_files
+        description: Linting
+        default_tool: veriblelint
+        toplevel: tb_io_pad
+        tools:
+            veriblelint:
+                verible_lint_args: ['--autofix=inplace-interactive', '--rules_config_search']
+
+    format:
+        filesets:
+            - lint_files
+        description: Formatting
+        default_tool: veribleformat
+        toplevel: tb_io_pad
+        tools:
+            veribleformat:
+                verible_format_args: ['--indentation_spaces=4', '--inplace']
+
+parameters:
+    SYNTHESIS:
+        datatype: bool
+        paramtype: vlogdefine

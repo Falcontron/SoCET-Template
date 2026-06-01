@@ -1,0 +1,6 @@
+[submodule "digital-lib"]
+	path = digital-lib
+	url = git@github.com:Purdue-SoCET/digital-lib.git
+[submodule "bus-components"]
+	path = bus-components
+	url = git@github.com:Purdue-SoCET/bus-components.git

@@ -1,0 +1,18 @@
+CAPI=2:
+name: socet:bus-components:mmio_printer:0.0.1
+description: Memory-mapped device that magically displays to terminal what is written (SIM only) 
+
+filesets:
+    rtl:
+        depend:
+            - "socet:bus-components:bus_protocol_if"
+        files:
+            - mmio_printer.sv
+        file_type: systemVerilogSource
+
+
+targets:
+    default:
+        filesets:
+            - rtl
+        toplevel: mmio_printer

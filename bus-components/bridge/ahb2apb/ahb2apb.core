@@ -1,0 +1,72 @@
+CAPI=2:
+name: socet:bus-components:ahb2apb:0.1.0
+description: AHB -> APB Bridge (AMBA 5)
+
+filesets:
+    rtl:
+        depend:
+            - "socet:bus-components:bus_protocol_if"
+            - "socet:bus-components:ahb_if"
+            - "socet:bus-components:apb_if"
+            - "socet:bus-components:ahb_subordinate"
+            - ">=socet:bus-components:apb_requester:0.1.0"
+            - "socet:digital-lib:cdc_fifo:0.0.1"
+        files:
+            - src/ahb2apb.sv
+        file_type: systemVerilogSource
+
+
+    tb:
+        depend:
+            - "socet:bus-components:simple_memory"
+            - "socet:bus-components:bus_protocol_if"
+            - "socet:bus-components:ahb_if"
+            - "socet:bus-components:apb_if"
+            - "socet:bus-components:ahb_manager"
+            - "socet:bus-components:apb_completer"
+            - "socet:digital-lib:cdc_fifo:0.0.1"
+        files:
+            - tb/tb_ahb2apb.sv
+        file_type: systemVerilogSource
+
+targets:
+    default: &default
+        filesets:
+            - rtl
+        toplevel: ahb2apb 
+
+
+    sim:
+        <<: *default
+        filesets_append:
+            - tb
+        description: Simulate w/TB
+        default_tool: xcelium
+        toplevel: tb_ahb2apb
+        tools:
+            xcelium:
+                xrun_options:
+                    - +xmtimescale+1ns/100ps
+                    - +access+rwc
+            verilator:
+                verilator_options:
+                    - --assert
+                    - --binary
+                    - --trace-fst
+                    - --trace-structs
+                    - -Wno-SYMRSVDWORD
+                    - -Wno-TIMESCALEMOD
+                    - -Wno-lint
+                    - -CFLAGS -std=c++20
+
+    lint:
+        filesets:
+            - rtl
+            - tb
+        description: Linting
+        default_tool: veriblelint
+        toplevel: tb_apb_completer
+        tools:
+            veriblelint:
+                verible_lint_args: ['--autofix=inplace-interactive', '--rules_config_search']
+

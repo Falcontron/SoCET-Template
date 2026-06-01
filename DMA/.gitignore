@@ -1,0 +1,15 @@
+#build files
+*.scomp
+*.stran
+*.wlf
+source_work/
+transcript
+*.swp
+build/.
+fusesoc_libraries/*
+fusesoc.conf
+.vscode/*
+saved_traces/*
+#dma_wave_v1.gtkw
+legacy/*
+bash_profile

@@ -1,0 +1,15 @@
+CAPI=2:
+name: socet:AHBUart:2.0.0
+description: AHB Uart
+
+filesets:
+    rtl:
+        files:
+            - AHBUart.sv
+        file_type: systemVerilogSource
+
+targets:
+    default: &default
+        filesets:
+            - rtl
+        toplevel: AHBUart

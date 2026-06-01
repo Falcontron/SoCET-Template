@@ -1,0 +1,200 @@
+CAPI=2:
+name: socet:aft:aftx07:2.0.0
+description: AFTx07 SoC
+
+filesets:
+    rtl:
+        depend:
+            - "socet:bus-components:bus_protocol_if"
+            - "socet:bus-components:apb_if"
+            - "socet:bus-components:apb_completer"
+            - "socet:bus-components:apb_interconnect:0.2.1"
+            - "socet:bus-components:ahb_if"
+            - "socet:bus-components:ahb_pkg"
+            - ">=socet:bus-components:ahb_subordinate:0.1.0"
+            - ">=socet:bus-components:ahb_simple_interconnect:0.1.1"
+            - "socet:bus-components:ahb_mux:0.0.2"
+            - ">=socet:bus-components:ahb2apb:0.1.0"
+            - "socet:aft:gpio"
+            - ">=socet:aft:pwm:0.1.1"
+            - ">=socet:aft:dma:0.1.1"
+            - "socet:aft:timer"
+            - "socet:aft:plic"
+            - "socet:aft:clint"
+            - "socet:riscv:RISCVBusiness"
+            - "socet:aft:spi"
+            - "socet:aft:sram_controller"
+            - "socet:aft:digital_io_mux"
+            - "socet:aft:ff_ram"
+            - "socet:aft:rom"
+            - ">=socet:purdnyuart:BaudRateGen:2.0.2"
+            - ">=socet:purdnyuart:UartRxEn:2.0.2"
+            - ">=socet:purdnyuart:UartTxEn:2.0.2"
+            - "socet:AHBUart:2.0.0"
+            - "socet:digital-lib:synchronizer"
+
+        files:
+            - top_level/src/aftx07.sv
+            - top_level/src/aftx07_macros.vh : { is_include_file : true }
+            - top_level/src/aftx07_mmap.vh : { is_include_file: true }
+        file_type: systemVerilogSource
+
+    rtl_append:
+        depend:
+            - ">=socet:bus-components:simple_memory:0.1.3"
+            - "socet:bus-components:mmio_printer"
+            - "socet:aft:sram_sim"
+        file_type: systemVerilogSource
+
+    tb:
+        files:
+            - top_level/tb/tb_aftx07.sv
+        file_type: systemVerilogSource
+
+    verilator_tb:
+        files:
+            - top_level/tb/tb_aftx07.cc : { file_type: cppSource }
+            - top_level/tb/sim-peripherals/UARTTcpServer.cc : { file_type: cppSource }
+            - top_level/tb/sim-peripherals/UARTTcpServer.hh : { file_type: cppSource, is_include_file: true }
+            - top_level/tb/sim-peripherals/UARTDataBuffer.hh : {file_type: cppSource, is_include_file: true}
+            - top_level/tb/sim-peripherals/UARTSimulator.hh : {file_type: cppSource, is_include_file: true}
+            - top_level/tb/sim-peripherals/MemoryMap.hh : {file_type: cppSource, is_include_file: true}
+            - top_level/tb/version.h : {file_type: cppSource, is_include_file: true}
+            - top_level/tb/util/PlusargsBuilder.hh : {file_type: cppSource, is_include_file: true}
+        file_type: systemVerilogSource
+
+    fpga:
+        depend:
+            - "socet:aft:io_pad"
+        files:
+            - fpga/aftx07_fpga.sv
+            - fpga/pinmap.tcl : { file_type: tclSource }
+        file_type: systemVerilogSource
+
+
+targets:
+    default: &default
+        filesets:
+            - rtl
+        toplevel: aftx07
+
+    sim:
+        <<: *default
+        description: Simulate with TB
+        default_tool: modelsim
+        filesets_append:
+            - rtl_append
+            - "!tool_verilator? (tb)"
+            - "tool_verilator? (verilator_tb)"
+
+        toplevel:
+            - "tool_verilator? (aftx07)"
+            - "!tool_verilator? (tb_aftx07)"
+        tools:
+            modelsim:
+                vlog_options:
+                    - -suppress 7061
+                vsim_options:
+                    - -vopt
+                    #- -voptargs='+acc'
+                    - -t ps
+
+            xcelium:
+                xrun_options:
+                    - +xmtimescale+1ns/100ps
+            vcs:
+                vcs_options:
+                    - -assert svaext
+
+            verilator:
+                verilator_options:
+                    - -CFLAGS -std=c++20
+                    - -Wno-ENUMVALUE
+                    - -Wno-lint
+                    - -Wno-SYMRSVDWORD
+                    - -Wno-TIMESCALEMOD
+                    - -Wno-UNPACKED
+                    - -Wno-UNOPTFLAT
+                    - -Wno-DEPRECATED
+                    - --trace-fst
+                    - --trace-structs
+                    - --trace-threads 4
+                    - --threads 4
+                make_options:
+                    - -j
+        parameters:
+            - RESET_PC=0x8400
+            - LOADABLE_FW=true
+
+    fpga:
+        filesets:
+            - rtl
+            - fpga
+        description: FPGA Synthesis
+        default_tool: quartus
+        parameters:
+            - SYNTHESIS=true
+            - QUARTUS=true
+        toplevel: aftx07_fpga
+        tools:
+            quartus:
+                family: Cyclone IV E
+                device: EP4CE115F29C7
+
+    syn:
+        filesets:
+            - rtl
+        description: Prepare for Synthesis
+        default_tool: xcelium
+        parameters:
+            - SYNTHESIS=true
+            - NOIP=true
+            - LOADABLE_FW=false
+        toplevel: aftx07
+
+    lint:
+        filesets:
+            - rtl
+            - tb
+        description: Lint with Verible
+        default_tool: veriblelint
+        toplevel: tb_aftx07
+        tools:
+            veriblelint:
+                verible_lint_args: ['--autofix=inplace-interactive', '--rules_config_search']
+
+parameters:
+    RESET_PC:
+        datatype: int
+        description: Reset value of the PC
+        paramtype: vlogparam
+
+    CLOCK_SPEED:
+        datatype: int
+        description: Clock speed (in MHz)
+        paramtype: vlogparam
+
+    INIT_FILE:
+        datatype: file
+        description: .bin file to initialize RAM
+        paramtype: cmdlinearg
+
+    SYNTHESIS:
+        description: Set for tools performing synthesis
+        datatype: bool
+        paramtype: vlogdefine
+
+    NOIP:
+        description: Do not include IP blocks, used with SYNTHESIS flag during synthesis for design flow
+        datatype: bool
+        paramtype: vlogdefine
+
+    QUARTUS:
+        description: Indicates that Quartus synthesis is used, enables syntax workarounds
+        datatype: bool
+        paramtype: vlogdefine
+
+    LOADABLE_FW:
+        description: sets up modules to allow for loadable firmware at simulation runtime. Automatically unset by SYNTHESIS.
+        datatype: bool
+        paramtype: vlogdefine 

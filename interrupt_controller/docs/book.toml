@@ -1,0 +1,6 @@
+[book]
+authors = ["Devin Singh"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Purdue SoCET - RISC-V Interrupt Controller"

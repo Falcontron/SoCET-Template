@@ -1,0 +1,33 @@
+name: Template CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  template-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install lightweight tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y verible yosys
+          python3 -m pip install --user fusesoc
+
+      - name: Setup template
+        run: ./setup.sh
+
+      - name: Build
+        run: ./build.sh
+
+      - name: Test
+        run: ./test.sh
+
+      - name: Lint
+        run: ./lint.sh
+
+      - name: Synthesis
+        run: ./synth.sh

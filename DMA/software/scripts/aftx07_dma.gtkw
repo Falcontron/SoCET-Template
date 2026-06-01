@@ -1,0 +1,254 @@
+[*]
+[*] GTKWave Analyzer v3.3.61 (w)1999-2014 BSI
+[*] Mon Jan 30 06:11:27 2023
+[*]
+[dumpfile] "/home/asicfab/a/socet81/SoCET/AFTx07/waveform.fst"
+[dumpfile_mtime] "Mon Jan 30 06:02:34 2023"
+[dumpfile_size] 1110785
+[savefile] "/home/asicfab/a/socet81/SoCET/AFTx07/aftx07_dma.gtkw"
+[timestart] 207494
+[size] 2560 1207
+[pos] -1 -1
+*-8.000000 207905 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] TOP.
+[treeopen] TOP.aftx07.
+[treeopen] TOP.aftx07.DMA.
+[treeopen] TOP.aftx07.RISCV_CORE.
+[treeopen] TOP.aftx07.RISCV_CORE.g_ahb_if.
+[treeopen] TOP.aftx07.RISCV_CORE.g_ahb_if.bt.
+[treeopen] TOP.aftx07.RISCV_CORE.pipeline.fetch_stage_i.fetch_ex_if.
+[treeopen] TOP.aftx07.RISCV_CORE.pipeline.mem_pipe_if.
+[treeopen] TOP.aftx07.RISCV_CORE.pipeline.mem_pipe_if.ex_mem_reg.
+[sst_width] 256
+[signals_width] 347
+[sst_expanded] 1
+[sst_vpaned_height] 579
+@28
+TOP.aftx07.CLK
+TOP.aftx07.nRST
+TOP.aftx07.halt
+@200
+-Fetch Stage
+@22
+TOP.aftx07.RISCV_CORE.pipeline.fetch_stage_i.pc[31:0]
+TOP.aftx07.RISCV_CORE.pipeline.fetch_stage_i.instr[31:0]
+@200
+-
+@22
+TOP.aftx07.RISCV_CORE.pipeline.igen_bus_if.addr[31:0]
+@28
+TOP.aftx07.RISCV_CORE.pipeline.igen_bus_if.busy
+@22
+TOP.aftx07.RISCV_CORE.pipeline.igen_bus_if.byte_en[3:0]
+TOP.aftx07.RISCV_CORE.pipeline.igen_bus_if.rdata[31:0]
+@28
+TOP.aftx07.RISCV_CORE.pipeline.igen_bus_if.ren
+@22
+TOP.aftx07.RISCV_CORE.pipeline.igen_bus_if.wdata[31:0]
+@28
+TOP.aftx07.RISCV_CORE.pipeline.igen_bus_if.wen
+@200
+-
+-Execute Stage
+@22
+TOP.aftx07.RISCV_CORE.pipeline.fetch_stage_i.fetch_ex_if.fetch_ex_reg.pc[31:0]
+@28
+TOP.aftx07.RISCV_CORE.pipeline.execute_stage_i.cu_if.opcode[6:0]
+@200
+-
+-Memory Stage
+@22
+TOP.aftx07.RISCV_CORE.pipeline.mem_pipe_if.ex_mem_reg.pc[31:0]
+@28
+TOP.aftx07.RISCV_CORE.pipeline.mem_pipe_if.ex_mem_reg.tracker_signals.opcode[6:0]
+@200
+-
+@22
+TOP.aftx07.RISCV_CORE.pipeline.dgen_bus_if.addr[31:0]
+@28
+TOP.aftx07.RISCV_CORE.pipeline.dgen_bus_if.busy
+@22
+TOP.aftx07.RISCV_CORE.pipeline.dgen_bus_if.byte_en[3:0]
+TOP.aftx07.RISCV_CORE.pipeline.dgen_bus_if.rdata[31:0]
+@28
+TOP.aftx07.RISCV_CORE.pipeline.dgen_bus_if.ren
+@22
+TOP.aftx07.RISCV_CORE.pipeline.dgen_bus_if.wdata[31:0]
+@28
+TOP.aftx07.RISCV_CORE.pipeline.dgen_bus_if.wen
+@200
+-
+-AHB BUS
+@22
+TOP.aftx07.RISCV_CORE.ahb_manager.HADDR[31:0]
+@28
+TOP.aftx07.RISCV_CORE.ahb_manager.HWRITE
+TOP.aftx07.RISCV_CORE.ahb_manager.HTRANS[1:0]
+TOP.aftx07.RISCV_CORE.ahb_manager.HMASTLOCK
+@22
+TOP.aftx07.RISCV_CORE.ahb_manager.HRDATA[31:0]
+@28
+TOP.aftx07.RISCV_CORE.ahb_manager.HREADY
+TOP.aftx07.RISCV_CORE.ahb_manager.HREADYOUT
+TOP.aftx07.RISCV_CORE.ahb_manager.HRESP
+TOP.aftx07.RISCV_CORE.ahb_manager.HSEL
+TOP.aftx07.RISCV_CORE.ahb_manager.HSIZE[2:0]
+@22
+TOP.aftx07.RISCV_CORE.ahb_manager.HWDATA[31:0]
+TOP.aftx07.RISCV_CORE.ahb_manager.HWSTRB[3:0]
+@200
+-DMA
+@22
+TOP.aftx07.DMA.subordinate.HADDR[31:0]
+TOP.aftx07.DMA.subordinate.HWDATA[31:0]
+@28
+TOP.aftx07.DMA.REGI.ahb_s.HREADYOUT
+TOP.aftx07.DMA.REGI.ahb_s.HREADY
+TOP.aftx07.DMA.REGI.ahb_s.HRESP
+TOP.aftx07.DMA.subordinate.HSEL
+@22
+TOP.aftx07.DMA.REGI.wreq_addr[31:0]
+@28
+TOP.aftx07.DMA.REGI.read_req
+TOP.aftx07.DMA.REGI.write_req
+@22
+TOP.aftx07.DMA.control_reg[31:0]
+TOP.aftx07.DMA.REGI.source_r[31:0]
+TOP.aftx07.DMA.REGI.dest_r[31:0]
+@200
+-DMA AHB_M
+@22
+TOP.aftx07.DMA.manager.ADDR_WIDTH
+@28
+TOP.aftx07.DMA.manager.HTRANS[1:0]
+@22
+TOP.aftx07.DMA.manager.HADDR[31:0]
+TOP.aftx07.DMA.manager.HRDATA[31:0]
+TOP.aftx07.DMA.manager.HWDATA[31:0]
+@28
+TOP.aftx07.DMA.manager.HSEL
+@200
+-DMA READ CTRL + FIFO
+@22
+TOP.aftx07.DMA.RCTRL.state[3:0]
+TOP.aftx07.DMA.FIF.memory[0][65:0]
+TOP.aftx07.DMA.FIF.memory[1][65:0]
+TOP.aftx07.DMA.FIF.memory[2][65:0]
+TOP.aftx07.DMA.FIF.memory[3][65:0]
+TOP.aftx07.DMA.FIF.memory[4][65:0]
+TOP.aftx07.DMA.FIF.memory[5][65:0]
+TOP.aftx07.DMA.FIF.memory[6][65:0]
+@28
+TOP.aftx07.DMA.write_control.state[2:0]
+@c00022
+TOP.aftx07.DMA.FIF.memory[7][65:0]
+@28
+(0)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(1)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(2)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(3)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(4)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(5)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(6)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(7)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(8)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(9)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(10)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(11)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(12)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(13)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(14)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(15)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(16)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(17)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(18)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(19)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(20)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(21)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(22)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(23)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(24)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(25)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(26)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(27)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(28)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(29)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(30)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(31)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(32)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(33)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(34)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(35)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(36)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(37)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(38)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(39)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(40)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(41)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(42)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(43)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(44)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(45)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(46)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(47)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(48)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(49)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(50)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(51)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(52)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(53)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(54)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(55)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(56)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(57)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(58)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(59)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(60)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(61)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(62)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(63)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(64)TOP.aftx07.DMA.FIF.memory[7][65:0]
+(65)TOP.aftx07.DMA.FIF.memory[7][65:0]
+@1401200
+-group_end
+@200
+-TOP
+@c00022
+#{TOP.aftx07.AHB_CXN.HRESP_arr[0:6]} TOP.aftx07.AHB_CXN.HRESP_arr[0] TOP.aftx07.AHB_CXN.HRESP_arr[1] TOP.aftx07.AHB_CXN.HRESP_arr[2] TOP.aftx07.AHB_CXN.HRESP_arr[3] TOP.aftx07.AHB_CXN.HRESP_arr[4] TOP.aftx07.AHB_CXN.HRESP_arr[5] TOP.aftx07.AHB_CXN.HRESP_arr[6]
+@28
+TOP.aftx07.AHB_CXN.HRESP_arr[0]
+TOP.aftx07.AHB_CXN.HRESP_arr[1]
+TOP.aftx07.AHB_CXN.HRESP_arr[2]
+TOP.aftx07.AHB_CXN.HRESP_arr[3]
+TOP.aftx07.AHB_CXN.HRESP_arr[4]
+TOP.aftx07.AHB_CXN.HRESP_arr[5]
+@22
+#{TOP.aftx07.AHB_CXN.addr_match_arr[0:6]} TOP.aftx07.AHB_CXN.addr_match_arr[0] TOP.aftx07.AHB_CXN.addr_match_arr[1] TOP.aftx07.AHB_CXN.addr_match_arr[2] TOP.aftx07.AHB_CXN.addr_match_arr[3] TOP.aftx07.AHB_CXN.addr_match_arr[4] TOP.aftx07.AHB_CXN.addr_match_arr[5] TOP.aftx07.AHB_CXN.addr_match_arr[6]
+@28
+TOP.aftx07.AHB_CXN.HRESP_arr[6]
+@1401200
+-group_end
+@28
+TOP.aftx07.RISCV_CORE.g_ahb_if.bt.state
+@c00023
+#{TOP.aftx07.AHB_CXN.addr_match_arr[0:6]} TOP.aftx07.AHB_CXN.addr_match_arr[0] TOP.aftx07.AHB_CXN.addr_match_arr[1] TOP.aftx07.AHB_CXN.addr_match_arr[2] TOP.aftx07.AHB_CXN.addr_match_arr[3] TOP.aftx07.AHB_CXN.addr_match_arr[4] TOP.aftx07.AHB_CXN.addr_match_arr[5] TOP.aftx07.AHB_CXN.addr_match_arr[6]
+@29
+TOP.aftx07.AHB_CXN.addr_match_arr[0]
+TOP.aftx07.AHB_CXN.addr_match_arr[1]
+TOP.aftx07.AHB_CXN.addr_match_arr[2]
+TOP.aftx07.AHB_CXN.addr_match_arr[3]
+TOP.aftx07.AHB_CXN.addr_match_arr[4]
+TOP.aftx07.AHB_CXN.addr_match_arr[5]
+TOP.aftx07.AHB_CXN.addr_match_arr[6]
+@c00023
+TOP.aftx07.AHB_CXN.dphase_select[3:0]
+@29
+(0)TOP.aftx07.AHB_CXN.dphase_select[3:0]
+(1)TOP.aftx07.AHB_CXN.dphase_select[3:0]
+(2)TOP.aftx07.AHB_CXN.dphase_select[3:0]
+(3)TOP.aftx07.AHB_CXN.dphase_select[3:0]
+@1401201
+-group_end
+-group_end
+[pattern_trace] 1
+[pattern_trace] 0

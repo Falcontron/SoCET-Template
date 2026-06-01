@@ -1,0 +1,127 @@
+CAPI=2:
+name: socet:aft:timer:0.1.0
+description: timer with capture/compare channels
+
+filesets:
+    rtl:
+        depend:
+            - "socet:digital-lib:edge_detector"
+            - "socet:bus-components:bus_protocol_if"
+        files:
+            - src/time_base.sv
+            - include/timer_pkg.svh:
+                is_include_file: true
+            - src/capture_compare.sv
+            - src/timer.sv
+            - src/timer_if.sv
+        file_type: systemVerilogSource
+    tb:
+        files:
+            - tb/tb_timer.sv
+        file_type: systemVerilogSource
+
+    lint_files:
+        files:
+            - src/gpio.sv
+            - tb/tb_gpio.sv
+            - tb/gpio_wrapper.sv
+            - include/timer_pkg.svh : {is_include_file: true}
+        file_type: systemVerilogSource
+
+
+targets:
+    default: &default
+        filesets:
+            - rtl
+        toplevel: timer
+    
+    sim:
+        <<: *default
+        description: Simulate w/TB
+        default_tool: verilator
+        filesets_append:
+            - "!tool_verilator? (tb)"
+            - "tool_verilator? (tb)"
+        parameters:
+            - BITS_WIDTH=32
+            - PERIOD=20
+            - CHANNELS=8
+
+        toplevel: 
+            - "tool_verilator? (tb_timer)"
+            - "!tool_verilator? (tb_timer)"
+        tools:
+            xcelium:
+                xrun_options:
+                    - +xmtimescale+1ns/100ps
+            modelsim:
+                vsim_options:
+                    - -vopt
+                    - -voptargs='+acc'
+                    - -t ps
+            vcs:
+                vcs_options:
+                    - -assert svaext
+            verilator:
+                verilator_options:
+                    - --trace
+                    - --trace-fst
+                    - --trace-structs
+                    - --timing
+                    - --binary
+
+    fpga:
+        <<: *default
+        description: Synthesize for FPGA
+        default_tool: quartus
+        toplevel:
+            - gpio
+        parameters:
+            - NUM_PINS=8
+            - SYNTHESIS=true
+        tools:
+            quartus:
+                family: Cyclone IV E
+                device: EP4CE115F29C7 
+                
+
+    lint:
+        filesets:
+            - lint_files
+        description: Linting
+        default_tool: veriblelint
+        toplevel: tb_gpio
+        tools:
+            veriblelint:
+                verible_lint_args: ['--autofix=inplace-interactive', '--rules_config_search']
+
+    format:
+        filesets:
+            - lint_files
+        description: Formatting
+        default_tool: veribleformat
+        toplevel: tb_gpio
+        tools:
+            veribleformat:
+                verible_format_args: ['--indentation_spaces=4', '--inplace']
+
+parameters:
+    BITS_WIDTH:
+        datatype: int
+        description: Number of pins, 1 <= BITS_WIDTH <= 32
+        paramtype: vlogparam
+    PERIOD:
+        datatype: int
+        description: period of clock
+        paramtype: vlogparam
+    NUM_REGISTERS:
+        datatype: int
+        description: Number of registers
+        paramtype: vlogparam
+    CHANNELS:
+        datatype: int
+        description: Number of capture/compare channels
+        paramtype: vlogparam
+    SYNTHESIS:
+        datatype: bool
+        paramtype: vlogdefine

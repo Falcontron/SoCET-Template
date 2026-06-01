@@ -1,0 +1,19 @@
+diff -Naur a/fusesoc_libraries/digital-lib/synchronizer/src/socetlib_synchronizer.sv b/fusesoc_libraries/digital-lib/synchronizer/src/socetlib_synchronizer.sv
+--- a/fusesoc_libraries/digital-lib/synchronizer/src/socetlib_synchronizer.sv	2023-10-18 00:23:53.986901501 -0400
++++ b/fusesoc_libraries/digital-lib/synchronizer/src/socetlib_synchronizer.sv	2023-10-18 00:08:00.300069308 -0400
+@@ -11,13 +11,13 @@
+ 
+     // Test parameters
+     
+-
++/*
+     if(STAGES < 2) begin
+         $error("socetlib_synchronizer: STAGES must be at least 2!");
+     end else if(STAGES > 3) begin
+         $error("socetlib_synchronizer: Are you SURE you wanted more than 3 stages of synchronizer???");
+     end
+-
++*/
+     logic [STAGES-1:0] stages;
+     logic [STAGES-1:0] reset_val;
+ 

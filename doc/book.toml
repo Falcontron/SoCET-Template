@@ -1,0 +1,6 @@
+[book]
+authors = ["Cole Nelson"]
+language = "en"
+multilingual = false
+src = "src"
+title = "AFTx07 Documentation"

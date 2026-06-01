@@ -1,0 +1,12 @@
+*~
+*.swp
+open_files.sh
+irun*
+waves.shm/
+INCA_libs/
+.simvision/
+*.docx#
+**/build/*
+fusesoc.conf
+**/fusesoc_libraries/**
+**fst

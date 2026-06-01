@@ -1,0 +1,99 @@
+CAPI=2:
+name: socet:aft:plic:0.2.0
+description: RISC-V Platform Level Interrupt Controller (PLIC)
+
+filesets:
+    rtl:
+        depend:
+            - "socet:bus-components:bus_protocol_if"
+            - "socet:digital-lib:edge_detector:0.0.4"
+            - "socet:digital-lib:counter:0.0.1"
+        files:
+            - packages/plic_pkg.sv
+            - src/gateway.sv
+            - src/interrupt_priority.sv
+            - src/plic_core.sv
+            - src/plic_gateway_if.sv
+            - src/plic_if.sv
+            - src/plic.sv
+            - src/priority_tree.sv
+        file_type: systemVerilogSource
+
+    verilator_tb:
+        files:
+            - tb/plic_wrapper.sv
+            - tb/tb_plic.cc : { file_type: cppSource }
+        file_type: systemVerilogSource
+
+    gateway_tb:
+        files:
+            - tb/gateway_wrapper.sv
+            - tb/tb_gateway.cc : { file_type: cppSource }
+        file_type: systemVerilogSource
+
+    lint_files:
+        files:
+            - src/gateway.sv
+            - src/plic_core.sv
+            - src/plic_gateway_if.sv
+            - src/plic_if.sv
+            - src/plic.sv
+            - tb/plic_wrapper.sv
+            - tb/tb_plic.cc
+            - tb/gateway_wrapper.sv
+            - tb/tb_gateway.cc
+        file_type: systemVerilogSource
+
+targets:
+    default: &default
+        filesets:
+            - rtl
+        toplevel: plic
+
+    sim:
+        <<: *default
+        description: Simulate w/TB
+        default_tool: verilator
+        filesets_append:
+            - "tool_verilator? (verilator_tb)"
+        toplevel:
+            - "tool_verilator? (plic_wrapper)"
+            - "!tool_verilator? (plic)"
+        tools:
+            verilator:
+                verilator_options:
+                    - --trace
+                    - --trace-fst
+                    - --trace-structs
+                    - -Wno-WIDTH
+            quartus:
+                family: Cyclone IV E
+                device: EP4CE115F29C7
+
+    sim-gateway:
+        <<: *default
+        description: Simulate w/Gateway TB
+        default_tool: verilator
+        filesets_append:
+            - "tool_verilator? (gateway_tb)"
+        toplevel:
+            - "tool_verilator? (gateway_wrapper)"
+        tools:
+            verilator:
+                verilator_options:
+                    - --trace
+                    - --trace-fst
+                    - --trace-structs
+                    - -Wno-WIDTH
+
+    lint:
+        filesets:
+            - lint_files
+        description: Linting
+        default_tool: veriblelint
+        toplevel:
+            - "!tool_verilator? (plic)"
+            - "tool_verilator? (plic_wrapper)"
+        tools:
+            veriblelint:
+                verible_lint_args: ['--autofix=inplace-interactive', '--rules_config_search']

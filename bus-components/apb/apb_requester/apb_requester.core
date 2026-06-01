@@ -1,0 +1,65 @@
+CAPI=2:
+name: socet:bus-components:apb_requester:0.1.0
+description: Parameterizable APB Requester (AMBA 5)
+
+filesets:
+    rtl:
+        depend:
+            - "socet:bus-components:bus_protocol_if"
+            - "socet:bus-components:apb_if"
+        files:
+            - src/apb_requester.sv
+        file_type: systemVerilogSource
+
+
+    tb:
+        depend:
+            - "socet:bus-components:bus_protocol_if"
+            - "socet:bus-components:apb_if"
+            - "socet:bus-components:simple_memory"
+            - "socet:bus-components:apb_completer"
+        files:
+            - tb/tb_apb_requester.sv
+            - "tool_verilator? (tb/tb_apb_requester.cc)"
+        file_type: systemVerilogSource
+
+targets:
+    default: &default
+        filesets:
+            - rtl
+        toplevel: apb_completer
+
+
+    sim:
+        <<: *default
+        filesets_append:
+            - tb
+        description: Simulate w/TB
+        default_tool: xcelium
+        toplevel: tb_apb_requester
+        tools:
+            xcelium:
+                xrun_options:
+                    - +xmtimescale+1ns/100ps
+            verilator:
+                verilator_options:
+                    - --trace
+                    - --trace-fst
+                    - --trace-structs
+                    - --timing
+                    - -Wno-lint
+                make_options:
+                    - -j `nproc`
+
+
+    lint:
+        filesets:
+            - rtl
+            - tb
+        description: Linting
+        default_tool: veriblelint
+        toplevel: tb_apb_requester
+        tools:
+            veriblelint:
+                verible_lint_args: ['--autofix=inplace-interactive', '--rules_config_search']
+

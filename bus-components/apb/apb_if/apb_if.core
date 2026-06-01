@@ -1,0 +1,26 @@
+CAPI=2:
+name: socet:bus-components:apb_if:0.0.1
+description: AMBA5 APB Interface
+
+filesets:
+    rtl:
+        files:
+            - apb_if.sv
+        file_type: systemVerilogSource
+
+targets:
+    default: &default
+        filesets:
+            - rtl
+        toplevel: apb_if
+        # No parameters?
+    
+    sim:
+        <<: *default
+        description: Simulate
+        default_tool: xcelium
+
+    lint:
+        <<: *default
+        description: Linting
+        default_tool: veriblelint

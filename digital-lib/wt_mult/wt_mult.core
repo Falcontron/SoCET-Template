@@ -1,0 +1,17 @@
+CAPI=2:
+name: socet:digital-lib:wt_mult:0.0.1
+description: Generalized Wallace Tree Multiplier
+
+filesets:
+  rtl:
+    files:
+      - wt_mult.sv
+      - wt_reduction.sv
+      - wt_partial_prod_gen.sv
+      - wt_mult_pkg.sv : { is_include_file: true }
+    file_type: systemVerilogSource
+
+targets:
+  default: &default
+    filesets:
+      - rtl

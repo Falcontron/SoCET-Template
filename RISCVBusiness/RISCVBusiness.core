@@ -1,0 +1,146 @@
+CAPI=2:
+name: socet:riscv:RISCVBusiness:0.1.1
+description: RISC-V Core for AFTx series
+
+filesets:
+    rtl:
+        depend:
+            - "socet:bus-components:bus_protocol_if"
+            - "socet:bus-components:ahb_if"
+            - "socet:bus-components:apb_if"
+            - "socet:riscv:packages"
+            - "socet:riscv:stage3"
+            - "socet:riscv:priv"
+            - "socet:riscv:caches"
+            - "socet:riscv:riscv_standard"
+            - "socet:riscv:riscv_include"
+            - "socet:riscv:rv32a"
+            - "socet:riscv:rv32c"
+            - "socet:riscv:rv32m"
+            - "socet:riscv:rv32b"
+            - "socet:riscv:rv32zc"
+        files:
+            - source_code/branch_predictors/branch_predictor_wrapper.sv
+            - source_code/branch_predictors/nottaken_predictor/nottaken_predictor.sv
+            - source_code/branch_predictors/btfnt_predictor/btfnt_predictor.sv
+            - source_code/branch_predictors/btb/btb.sv
+            - source_code/branch_predictors/return_predictor/return_predictor.sv
+            - source_code/branch_predictors/ghr_pht/ghr_pht.sv
+            - source_code/branch_predictors/btb_ghr_pht/btb_ghr_pht.sv
+            - source_code/bus_bridges/generic_nonpipeline.sv
+        file_type: systemVerilogSource
+
+    trackers:
+        files:
+            - source_code/trackers/branch_tracker.sv
+            - source_code/trackers/cpu_tracker.sv
+        file_type: systemVerilogSource
+
+    buses:
+        files:
+            - source_code/bus_bridges/ahb.sv
+            - source_code/bus_bridges/apb.sv
+            #- "!tool_verilator? (source_code/bus_bridges/ahb.sv)"
+            #- "!tool_verilator? (source_code/bus_bridges/apb.sv)"
+        file_type: systemVerilogSource
+
+    fpga_wrapper:
+        files:
+            - source_code/fpga/RISCVBusiness_fpga.sv : {file_type: systemVerilogSource}
+            - source_code/ram/ram_sim_model.sv : {file_type: systemVerilogSource}
+            - source_code/ram/ram_wrapper.sv : {file_type: systemVerilogSource}
+            - rvb.sdc : {file_type: SDC}
+            
+    verilator_tb:
+        files:
+            - tb_core.cc : {file_type: cppSource}
+        file_type: systemVerilogSource
+
+    no_memory_tb:
+        files:
+            - tb_core_no_memory.cc : {file_type: cppSource}
+        file_type: systemVerilogSource
+
+    tb:
+        files:
+            - source_code/tb/tb_RISCVBusiness_self_test.sv
+            - source_code/ram/config_ram_wrapper.sv
+            - source_code/ram/ram_sim_model.sv
+            - source_code/ram/ram_wrapper.sv
+        file_type: systemVerilogSource
+
+targets:
+    default: &default
+        filesets:
+            - rtl
+            - buses
+            - trackers
+        toplevel: RISCVBusiness
+
+    sim:
+        <<: *default
+        description: Simulate w/TB
+        default_tool: verilator
+        filesets_append:
+            - "tool_verilator? (verilator_tb)"
+            - "!tool_verilator? (tb)"
+        toplevel:
+            - "tool_verilator? (top_core)"
+            - "!tool_verilator? (tb_RISCVBusiness_self_test)"
+        tools:
+            xcelium:
+                xrun_options:
+                    - +xmtimescale+1ns/100ps
+            modelsim:
+                vsim_options:
+                    - -vopt
+                    - -voptargs='+acc'
+                    - -t ps
+
+            verilator:
+                verilator_options: ["-Wno-SYMRSVDWORD", "-Wno-ENUMVALUE", "-Wno-lint", "--trace", "--trace-fst", "--trace-structs", "--trace-threads 4", "--threads 4"]
+                make_options:
+                    - -j 48
+
+    fpga:
+        <<: *default
+        filesets_append:
+            - buses
+            - fpga_wrapper
+        description: FPGA Synthesis
+        default_tool: quartus
+        parameters:
+            - SYNTHESIS=true
+        toplevel: top_core
+        tools:
+            quartus:
+                family: Cyclone IV E
+                device: EP4CE115F29C7
+
+
+    lint:
+        filesets:
+            - rtl
+            - trackers
+        description: Linting
+        default_tool: veriblelint
+        toplevel: top_core
+        tools:
+            veriblelint:
+                verible_lint_args: ['--autofix=inplace-interactive', '--rules_config_search', '--waiver_files=riscv.waiver']
+
+    format:
+        filesets:
+            - rtl
+        description: Linting
+        default_tool: veribleformat
+        toplevel: top_core
+        tools:
+            veribleformat:
+                verible_format_args: ['--indentation_spaces=4', '--inplace']
+
+parameters:
+    SYNTHESIS:
+        description: Set for tools performing synthesis
+        datatype: bool
+        paramtype: vlogdefine

@@ -1,0 +1,145 @@
+CAPI=2:
+name: socet:aft:dma:0.1.1
+description: DMA module 
+
+filesets:
+    rtl:
+        depend:
+            - "socet:bus-components:bus_protocol_if"
+            - "socet:bus-components:ahb_if"
+        files:
+            - source/counter.sv
+            - source/dma_controller.sv
+            - source/fifo.sv
+            - source/memArbiter.sv
+            - source/read_control.sv
+            - source/registers.sv
+            - source/write_control.sv
+            - include/cpu_types_pkg.vh:
+                is_include_file: true
+            - include/memArb_if.vh:
+                is_include_file: true
+            - include/readControl_if.vh:
+                is_include_file: true
+            - include/writeControl_if.vh:
+                is_include_file: true
+        file_type: systemVerilogSource
+
+    tb:
+        depend:
+            - "socet:bus-components:simple_memory"
+        files:
+            - tb/tb_dma_controller.sv
+            - tb/dma_wrapper.sv
+            - tb/simple_memory_wrapper.sv
+        file_type: systemVerilogSource
+
+    verilator_tb:
+        files:
+            - tb/dma_wrapper.sv
+            - tb/tb_dma.cc : { file_type: cppSource }
+            - tb/tb_dma.h : {file_type: cppSource }
+        file_type: systemVerilogSource
+
+    lint_files:
+        files:
+            - source/counter.sv
+            - source/dma_controller.sv
+            - source/fifo.sv
+            - source/memArbiter.sv
+            - source/read_control.sv
+            - source/registers.sv
+            - source/write_control.sv
+            - include/cpu_types_pkg.vh:
+                is_include_file: true
+            - include/memArb_if.vh:
+                is_include_file: true
+            - include/readControl_if.vh:
+                is_include_file: true
+            - include/writeControl_if.vh:
+                is_include_file: true
+
+            - tb/tb_dma_controller.sv
+            - tb/dma_wrapper.sv
+        file_type: systemVerilogSource
+
+
+targets:
+    default: &default
+        filesets:
+            - rtl
+        toplevel: gpio
+    
+    sim:
+        <<: *default
+        description: Simulate w/TB
+        default_tool: verilator
+        filesets_append:
+            - "!tool_verilator? (tb)"
+            - "tool_verilator? (verilator_tb)"
+#        parameters:
+#           - NUM_PINS=8
+        toplevel: 
+            - "tool_verilator? (dma_wrapper)"
+            - "!tool_verilator? (tb_dma)"
+        tools:
+            xcelium:
+                xrun_options:
+                    - +xmtimescale+1ns/100ps
+            modelsim:
+                vsim_options:
+                    - -vopt
+                    - -voptargs='+acc'
+                    - -t ps
+            vcs:
+                vcs_options:
+                    - -assert svaext
+            verilator:
+                verilator_options:
+                    - --trace
+                    - --trace-fst
+                    - --trace-structs
+
+    fpga:
+        <<: *default
+        description: Synthesize for FPGA
+        default_tool: quartus
+        toplevel:
+            - gpio
+        parameters:
+            - NUM_PINS=8
+            - SYNTHESIS=true
+        tools:
+            quartus:
+                family: Cyclone IV E
+                device: EP4CE115F29C7 
+                
+
+    lint:
+        filesets:
+            - lint_files
+        description: Linting
+        default_tool: veriblelint
+        toplevel: tb_dma
+        tools:
+            veriblelint:
+                verible_lint_args: ['--autofix=inplace-interactive', '--rules_config_search']
+
+    format:
+        filesets:
+            - lint_files
+        description: Formatting
+        default_tool: veribleformat
+        toplevel: tb_dma
+        tools:
+            veribleformat:
+                verible_format_args: ['--indentation_spaces=4', '--inplace']
+
+#parameters:
+#    NUM_PINS:
+#        datatype: int
+#        description: Number of pins, 1 <= NUM_PINS <= 32
+#        paramtype: vlogparam
+#    SYNTHESIS:
+#        datatype: bool
+#        paramtype: vlogdefine

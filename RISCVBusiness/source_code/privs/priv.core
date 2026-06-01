@@ -1,0 +1,34 @@
+CAPI=2:
+name: socet:riscv:priv:0.1.0
+description: Privileged Architecture for RISCVBusiness
+
+filesets:
+    rtl:
+        depend:
+            - socet:digital-lib:edge_detector:0.0.4
+        files:
+            - priv_wrapper.sv
+            - priv_int_ex_handler.sv
+            - priv_block.sv
+            - priv_csr.sv
+            - priv_pipe_control.sv
+            - priv_pma.sv
+            - priv_pmp.sv
+            - priv_pmp_matcher.sv
+            - priv_mode.sv
+        file_type: systemVerilogSource
+
+
+targets:
+    default: &default
+        filesets:
+            - rtl
+        toplevel: priv_wrapper
+
+    lint:
+        <<: *default
+        description: Linting
+        default_tool: veriblelint
+        tools:
+            veriblelint:
+                verible_lint_args: ['--autofix=inplace-interactive', '--rules_config_search']

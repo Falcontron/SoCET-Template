@@ -1,0 +1,29 @@
+Memory Arbiter Spec
+
+Inputs:
+-There are a near identical set of inputs from read_control_unit and write_control_unit
+
+Inputs from read_control_unit
+-r_hsize[2:0]  - 2^(hsize) is the word size for the transfer. For initial testing, will always be 0 (1 byte)
+-r_hwrite      - write or read transfer, but a shortcut you can use is that the read control unit will only ever read and the write control unit will only ever write so this signal is not currently necessary but included for future-proof. It is up to you if you want to use this or not.
+-r_hsel        - will be set to 1 when the controller wants/ready to do a read and 0 when it is not  
+-r_haddr[31:0] - will be set to the address for the read 
+
+Inputs from write_control_unit
+-w_hsize[2:0]  - 2^(hsize) is the word size for the transfer. For initial testing, will always be 0 (1 byte)
+-w_hwrite      - write or read transfer, but a shortcut you can use is that the read control unit will only ever read and the write control unit will only ever write so this signal is not currently necessary but included for future-proof. It is up to you if you want to use this or not.
+-w_hsel        - will be set to 1 when the controller wants/ready to do a write and 0 when it is not 
+-w_haddr[31:0] - will be set to the address for the write
+-w_hwdata[8:0] - will be set to the data to write to the w_haddr address 
+
+
+Outputs: 
+
+Outputs to the DMA controller components(read/write controllers)
+-w_hready      - A signal that is normally low, but goes high once the arbiter has finished a write transaction for the write_control_unit. When this goes high, w_hsel should be high and w_hwdata written to the bus. 
+-r_heady       - A signal that is normally low, but goes high once the arbiter has finished a read transaction for the read_control_unit. When this goes high, the requested data should be on the hrdata lines and r_hsel should be high.
+-hrdata[7:0]   - The data received from the read transaction, only needs to be valid on the same cycle that r_hready goes high
+-error 	       - Any kind of error 
+
+Outputs to AHB-lite Interface
+-standard ahb-lite signals you know better than I do

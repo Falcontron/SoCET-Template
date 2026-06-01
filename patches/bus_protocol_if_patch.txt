@@ -1,0 +1,13 @@
+diff --git a/generic/bus_protocol_if/bus_protocol_if.core b/generic/bus_protocol_if/bus_protocol_if.core
+index 2da4d77..e0ac14f 100644
+--- a/generic/bus_protocol_if/bus_protocol_if.core
++++ b/generic/bus_protocol_if/bus_protocol_if.core
+@@ -5,7 +5,7 @@ description: Interface between module and bus protocol
+ filesets:
+     rtl:
+         files:
+-            - ./bus_protocol_if.sv
++            - bus_protocol_if.sv
+         file_type: systemVerilogSource
+ 
+ targets:
