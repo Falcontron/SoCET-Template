@@ -1,4 +1,4 @@
-name: Build
+name: AFT Build
 
 on:
   pull_request:
@@ -8,6 +8,7 @@ on:
 
 jobs:
   build:
+    name: Setup and Build
     runs-on: ubuntu-latest
 
     steps:
