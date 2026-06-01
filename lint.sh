@@ -26,20 +26,43 @@ fi
 
 echo "Running Verible lint"
 
-find . \
-    \( -path "./aft_out" \
-    -o -path "./aft_out_xcelium" \
-    -o -path "./fusesoc_libraries" \
-    -o -path "./.git" \
-    -o -path "./.venv" \
-    -o -path "./logs" \) -prune \
-    -o \( -name "*.sv" -o -name "*.svh" -o -name "*.v" -o -name "*.vh" \) \
-    -print > verible_filelist.txt
+# Start with AFT-owned RTL only. Avoid RISCVBusiness, third-party IP,
+# generated build dirs, UVM verification, and copied submodule code.
+LINT_DIRS=(
+    "DMA"
+    "digital_io_mux"
+    "gpio"
+    "interrupt_controller"
+    "pwm"
+    "sram_controller"
+    "timer"
+    "top_level"
+    "fpga"
+)
+
+: > verible_filelist.txt
+
+for dir in "${LINT_DIRS[@]}"; do
+    if [ -d "$dir" ]; then
+        find "$dir" -type f \
+            \( -name "*.sv" -o -name "*.svh" -o -name "*.v" -o -name "*.vh" \) \
+            >> verible_filelist.txt
+    fi
+done
+
+# Optional: include top-level standalone RTL files if they exist.
+find . -maxdepth 1 -type f \
+    \( -name "*.sv" -o -name "*.svh" -o -name "*.v" -o -name "*.vh" \) \
+    >> verible_filelist.txt
+
+sort -u verible_filelist.txt -o verible_filelist.txt
 
 if [ ! -s verible_filelist.txt ]; then
     echo "No Verilog/SystemVerilog files found"
     exit 0
 fi
+
+echo "Linting $(wc -l < verible_filelist.txt) files"
 
 if [ -f ".rules.verible_lint" ]; then
     verible-verilog-lint --rules_config=.rules.verible_lint $(cat verible_filelist.txt)
