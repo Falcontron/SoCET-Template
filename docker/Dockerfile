@@ -3,10 +3,12 @@ FROM ubuntu:24.04
 ARG DEBIAN_FRONTEND=noninteractive
 ARG VERILATOR_REF=v5.048
 ARG VERIBLE_VERSION=v0.0-4023-gc1271a00
+ARG SV2V_VERSION=v0.0.12
 
 RUN apt-get update && apt-get install -y \
     git \
     curl \
+    unzip \
     ca-certificates \
     help2man \
     perl \
@@ -24,6 +26,7 @@ RUN apt-get update && apt-get install -y \
     zlib1g \
     zlib1g-dev \
     build-essential \
+    yosys \
     && rm -rf /var/lib/apt/lists/*
 
 # Build known-good Verilator from source instead of using apt verilator.
@@ -44,12 +47,19 @@ RUN curl -L -o /tmp/verible.tar.gz \
     tar -xzf /tmp/verible.tar.gz -C /opt/verible --strip-components=1 && \
     rm /tmp/verible.tar.gz
 
+# Install sv2v from release binary.
+RUN curl -L -o /tmp/sv2v.zip \
+    "https://github.com/zachjs/sv2v/releases/download/${SV2V_VERSION}/sv2v-Linux.zip" && \
+    unzip /tmp/sv2v.zip -d /opt/sv2v && \
+    rm /tmp/sv2v.zip && \
+    chmod +x /opt/sv2v/sv2v
+
 # Install common Python HDL tooling in a venv.
 RUN python3 -m venv /opt/socet-venv && \
     /opt/socet-venv/bin/pip install --upgrade pip && \
     /opt/socet-venv/bin/pip install fusesoc edalize pyyaml
 
-ENV PATH="/opt/verible/bin:/opt/socet-venv/bin:${PATH}"
+ENV PATH="/opt/sv2v:/opt/verible/bin:/opt/socet-venv/bin:${PATH}"
 ENV PYTHONPATH=""
 
 WORKDIR /work
