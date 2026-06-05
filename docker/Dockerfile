@@ -51,17 +51,16 @@ RUN curl -L -o /tmp/verible.tar.gz \
     tar -xzf /tmp/verible.tar.gz -C /opt/verible --strip-components=1 && \
     rm /tmp/verible.tar.gz
 
-    
-ARG SVLINT_VERSION=v0.9.3
+# Install Rust and svlint using rustup to avoid old Ubuntu rustc/cargo versions.
+ENV CARGO_HOME=/opt/cargo
+ENV RUSTUP_HOME=/opt/rustup
+ENV PATH="/opt/cargo/bin:${PATH}"
 
-# Install svlint from prebuilt release.
-RUN curl -L -o /tmp/svlint.tar.gz \
-    "https://github.com/dalance/svlint/releases/download/${SVLINT_VERSION}/svlint-x86_64-unknown-linux-gnu.tar.gz" && \
-    tar -xzf /tmp/svlint.tar.gz -C /tmp && \
-    find /tmp -type f -name svlint -exec cp {} /usr/local/bin/svlint \; && \
-    chmod +x /usr/local/bin/svlint && \
-    rm -rf /tmp/svlint* && \
-    svlint --version
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal && \
+    cargo install svlint --locked && \
+    cp /opt/cargo/bin/svlint /usr/local/bin/svlint && \
+    svlint --version && \
+    rm -rf /opt/cargo/registry /opt/cargo/git
 
 # Build sv2v from source.
 RUN git clone https://github.com/zachjs/sv2v.git /opt/sv2v-src && \
@@ -80,7 +79,7 @@ RUN python3 -m venv /opt/socet-venv && \
     /opt/socet-venv/bin/pip install --upgrade pip && \
     /opt/socet-venv/bin/pip install fusesoc edalize pyyaml
 
-ENV PATH="/opt/sv2v/bin:/opt/verible/bin:/opt/socet-venv/bin:${PATH}"
+ENV PATH="/opt/sv2v/bin:/opt/verible/bin:/opt/cargo/bin:/opt/socet-venv/bin:${PATH}"
 ENV PYTHONPATH=""
 
 WORKDIR /work
