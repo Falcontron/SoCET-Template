@@ -31,7 +31,45 @@ RUN apt-get update && apt-get install -y \
     cabal-install \
     alex \
     happy \
+    cmake \
+    swig \
+    tcl-dev \
+    libreadline-dev \
+    libeigen3-dev \
+    libgtest-dev \
+    autoconf \
+    automake \
+    libtool \
+    m4 \
     && rm -rf /var/lib/apt/lists/*
+
+# Build CUDD from source for OpenSTA.
+RUN git clone https://github.com/ivmai/cudd.git /opt/cudd-src && \
+    cd /opt/cudd-src && \
+    autoreconf -fiv && \
+    ./configure --prefix=/opt/cudd --enable-shared --enable-obj && \
+    make -j"$(nproc)" && \
+    make install && \
+    cd / && \
+    rm -rf /opt/cudd-src
+
+# Make CUDD shared libraries visible to OpenSTA at runtime.
+RUN echo "/opt/cudd/lib" > /etc/ld.so.conf.d/cudd.conf && ldconfig
+
+# Build OpenSTA from source first so OpenSTA failures appear early.
+RUN git clone --recursive https://github.com/The-OpenROAD-Project/OpenSTA.git /opt/OpenSTA-src && \
+    cd /opt/OpenSTA-src && \
+    mkdir -p build && \
+    cd build && \
+    cmake .. \
+        -DCUDD_INCLUDE_DIR=/opt/cudd/include \
+        -DCUDD_LIB=/opt/cudd/lib/libcudd.so && \
+    make VERBOSE=1 -j"$(nproc)" && \
+    make install && \
+    command -v sta && \
+    sta -version && \
+    cd / && \
+    rm -rf /opt/OpenSTA-src
 
 # Build known-good Verilator from source instead of using apt verilator.
 RUN git clone https://github.com/verilator/verilator.git /opt/verilator-src && \
