@@ -49,6 +49,7 @@ RUN curl -L -o /tmp/verible.tar.gz \
     "https://github.com/chipsalliance/verible/releases/download/${VERIBLE_VERSION}/verible-${VERIBLE_VERSION}-linux-static-x86_64.tar.gz" && \
     mkdir -p /opt/verible && \
     tar -xzf /tmp/verible.tar.gz -C /opt/verible --strip-components=1 && \
+    chmod -R a+rX /opt/verible && \
     rm /tmp/verible.tar.gz
 
 # Install Rust and svlint using rustup to avoid old Ubuntu rustc/cargo versions.
