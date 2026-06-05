@@ -27,7 +27,6 @@ RUN apt-get update && apt-get install -y \
     zlib1g-dev \
     build-essential \
     yosys \
-    opensta \
     ghc \
     cabal-install \
     alex \
