@@ -45,7 +45,9 @@ RUN git clone --recursive https://github.com/The-OpenROAD-Project/OpenSTA.git /o
     cd /opt/OpenSTA-src && \
     mkdir -p build && \
     cd build && \
-    cmake .. && \
+    cmake .. \
+        -DCUDD_INCLUDE_DIR=/opt/cudd/include \
+        -DCUDD_LIB=/opt/cudd/lib/libcudd.so && \
     make VERBOSE=1 -j"$(nproc)" && \
     make install && \
     command -v sta && \
