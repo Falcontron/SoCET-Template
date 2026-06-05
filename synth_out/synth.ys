@@ -1,0 +1,12 @@
+read_verilog synth_out/converted.v
+hierarchy -check -top counter
+proc
+opt
+fsm
+opt
+memory
+opt
+techmap
+opt
+stat
+write_verilog synth_out/synth_netlist.v

@@ -30,7 +30,7 @@ if ! command -v yosys >/dev/null 2>&1; then
 fi
 
 SYNTH_MODE="${SYNTH_MODE:-smoke}"
-TOP_MODULE="${SYNTH_TOP:-socetlib_counter}"
+TOP_MODULE="${SYNTH_TOP:-counter}"
 OUT_DIR="${SYNTH_OUT_DIR:-synth_out}"
 
 mkdir -p "$OUT_DIR"
@@ -44,40 +44,35 @@ echo "Output directory: $OUT_DIR"
 # Smoke synthesis mode
 # ============================================================
 # This mode proves the open-source synthesis toolchain works:
-#   FuseSoC build metadata -> sv2v -> Yosys -> reports
+#   SystemVerilog RTL -> sv2v -> Yosys -> reports
 #
-# It intentionally synthesizes a small known-good module instead of the full
-# AFT chip, because full-chip AFT currently trips a Yosys/sv2v issue in the CSR logic.
+# The source files are controlled by SYNTH_SRCS in config.env.
 # ============================================================
 
 if [ "$SYNTH_MODE" = "smoke" ]; then
     echo "Running smoke synthesis"
 
-    # Ensure FuseSoC generated sources exist.
-    if [ ! -d "aft_out" ]; then
-        echo "aft_out not found; running build first"
-        ./build.sh
-    fi
-
-    SRC="$(find aft_out -name 'socetlib_counter.sv' | head -n 1 || true)"
-
-    if [ -z "$SRC" ] || [ ! -f "$SRC" ]; then
-        echo "Could not find socetlib_counter.sv; running build and trying again"
-        ./build.sh
-        SRC="$(find aft_out -name 'socetlib_counter.sv' | head -n 1 || true)"
-    fi
-
-    if [ -z "$SRC" ] || [ ! -f "$SRC" ]; then
-        echo "ERROR: Could not find socetlib_counter.sv" >&2
+    if [ -z "${SYNTH_SRCS:-}" ]; then
+        echo "ERROR: SYNTH_MODE=smoke but SYNTH_SRCS is empty" >&2
         exit 1
     fi
 
-    echo "Using source file: $SRC"
+    : > "$OUT_DIR/rtl_files.f"
 
-    echo "$SRC" > "$OUT_DIR/rtl_files.f"
+    for src in ${SYNTH_SRCS}; do
+        if [ ! -f "$src" ]; then
+            echo "ERROR: synthesis source not found: $src" >&2
+            exit 1
+        fi
+
+        echo "$src" >> "$OUT_DIR/rtl_files.f"
+    done
+
+    echo "RTL filelist:"
+    cat "$OUT_DIR/rtl_files.f"
 
     echo "Running sv2v"
-    sv2v "$SRC" > "$OUT_DIR/converted.v"
+    sv2v $(cat "$OUT_DIR/rtl_files.f") > "$OUT_DIR/converted.v"
 
     echo "Writing Yosys script"
     cat > "$OUT_DIR/synth.ys" <<EOF
@@ -109,8 +104,8 @@ fi
 # ============================================================
 # Full synthesis mode
 # ============================================================
-# This attempts full-chip AFT synthesis using the FuseSoC .eda.yml.
-# This path is experimental right now.
+# This mode is reserved for larger FuseSoC-based projects that want
+# to synthesize from a generated .eda.yml file.
 # ============================================================
 
 if [ "$SYNTH_MODE" != "full" ]; then
@@ -118,18 +113,18 @@ if [ "$SYNTH_MODE" != "full" ]; then
     exit 1
 fi
 
-echo "Running full-chip synthesis"
+echo "Running full synthesis"
 
 EDA_YML="${SYNTH_EDA_YML:-}"
 
 if [ -z "$EDA_YML" ]; then
-    EDA_YML="$(find aft_out -name "*.eda.yml" | head -n 1 || true)"
+    EDA_YML="$(find "${FUSESOC_BUILD_ROOT:-build_out}" -name "*.eda.yml" | head -n 1 || true)"
 fi
 
 if [ -z "$EDA_YML" ] || [ ! -f "$EDA_YML" ]; then
     echo "No .eda.yml found. Running build first to generate FuseSoC metadata."
     ./build.sh
-    EDA_YML="$(find aft_out -name "*.eda.yml" | head -n 1 || true)"
+    EDA_YML="$(find "${FUSESOC_BUILD_ROOT:-build_out}" -name "*.eda.yml" | head -n 1 || true)"
 fi
 
 if [ -z "$EDA_YML" ] || [ ! -f "$EDA_YML" ]; then
@@ -164,7 +159,6 @@ for item in eda.get("files", []):
     lower = path.lower()
     abs_path = os.path.abspath(os.path.join(eda_dir, path))
 
-    # Collect include directories from FuseSoC include files.
     if item.get("is_include_file", False):
         if os.path.exists(abs_path):
             inc_dir = os.path.dirname(abs_path)
@@ -174,18 +168,14 @@ for item in eda.get("files", []):
             print(f"Warning: missing include file: {abs_path}")
         continue
 
-    # Skip obvious non-synth / sim-only files.
     if (
         ("tb" in lower and "btb" not in lower)
         or "verification" in lower
-        or "top_core" in lower
-        or "sram_sim" in lower
         or "uvm" in lower
         or "test" in lower
     ):
         continue
 
-    # Only source files for now.
     if not (path.endswith(".sv") or path.endswith(".v")):
         continue
 
@@ -213,9 +203,6 @@ if [ ! -s "$OUT_DIR/rtl_files.f" ]; then
     echo "ERROR: RTL filelist is empty" >&2
     exit 1
 fi
-
-echo "RTL filelist:"
-cat "$OUT_DIR/rtl_files.f"
 
 SV2V_INCLUDE_ARGS=""
 while read -r inc_dir; do
@@ -248,5 +235,5 @@ yosys -s "$OUT_DIR/synth.ys" | tee "$OUT_DIR/yosys.log"
 echo "Extracting area-style stats"
 grep -A80 "Printing statistics" "$OUT_DIR/yosys.log" > "$OUT_DIR/area_report.txt" || true
 
-echo "Full-chip synthesis complete"
+echo "Full synthesis complete"
 echo "Reports written to $OUT_DIR/"

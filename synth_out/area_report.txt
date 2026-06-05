@@ -1,0 +1,27 @@
+11. Printing statistics.
+
+=== counter ===
+
+   Number of wires:                  9
+   Number of wire bits:             37
+   Number of public wires:           4
+   Number of public wire bits:      11
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                 24
+     $_AND_                          8
+     $_DFFE_PN0P_                    8
+     $_NOT_                          1
+     $_XOR_                          7
+
+12. Executing Verilog backend.
+
+12.1. Executing BMUXMAP pass.
+
+12.2. Executing DEMUXMAP pass.
+Dumping module `\counter'.
+
+End of script. Logfile hash: a8332e2c8b, CPU: user 0.03s system 0.01s, MEM: 12.88 MB peak
+Yosys 0.33 (git sha1 2584903a060)
+Time spent: 20% 13x opt_expr (0 sec), 19% 3x read_verilog (0 sec), ...
