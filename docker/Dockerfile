@@ -31,6 +31,11 @@ RUN apt-get update && apt-get install -y \
     cabal-install \
     alex \
     happy \
+    cmake \
+    swig \
+    tcl-dev \
+    libreadline-dev \
+    libeigen3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Build known-good Verilator from source instead of using apt verilator.
@@ -62,6 +67,20 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal && \
     cp /opt/cargo/bin/svlint /usr/local/bin/svlint && \
     svlint --version && \
     rm -rf /opt/cargo/registry /opt/cargo/git
+
+# Build OpenSTA from source.
+# VERBOSE=1 is intentional so GitHub Actions logs show the real compiler/linker error if this fails.
+RUN git clone --recursive https://github.com/The-OpenROAD-Project/OpenSTA.git /opt/OpenSTA-src && \
+    cd /opt/OpenSTA-src && \
+    mkdir -p build && \
+    cd build && \
+    cmake .. && \
+    make VERBOSE=1 -j"$(nproc)" && \
+    make install && \
+    command -v sta && \
+    sta -version && \
+    cd / && \
+    rm -rf /opt/OpenSTA-src
 
 # Build sv2v from source.
 RUN git clone https://github.com/zachjs/sv2v.git /opt/sv2v-src && \
