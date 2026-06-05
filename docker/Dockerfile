@@ -37,6 +37,10 @@ RUN apt-get update && apt-get install -y \
     libreadline-dev \
     libeigen3-dev \
     libgtest-dev \
+    autoconf \
+    automake \
+    libtool \
+    m4 \
     && rm -rf /var/lib/apt/lists/*
 
 # Build CUDD from source for OpenSTA.
