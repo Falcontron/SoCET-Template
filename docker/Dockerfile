@@ -46,6 +46,7 @@ RUN apt-get update && apt-get install -y \
 # Build CUDD from source for OpenSTA.
 RUN git clone https://github.com/ivmai/cudd.git /opt/cudd-src && \
     cd /opt/cudd-src && \
+    autoreconf -fiv && \
     ./configure --prefix=/opt/cudd --enable-shared --enable-obj && \
     make -j"$(nproc)" && \
     make install && \
