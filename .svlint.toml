@@ -1,0 +1,19 @@
+[option]
+exclude_paths = [
+    "build_out/.*",
+    "build_out_xcelium/.*",
+    "synth_out/.*"
+]
+
+[rules]
+blocking_assignment_in_always_ff = true
+case_default = true
+enum_with_type = true
+function_same_as_system_function = true
+keyword_forbidden_always = true
+keyword_forbidden_wire_reg = true
+legacy_always = true
+module_nonansi_forbidden = true
+operator_case_equality = true
+style_indent = true
+style_trailingwhitespace = true
