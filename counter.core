@@ -1,0 +1,30 @@
+CAPI=2:
+
+name: socet:template:counter:0.1.0
+description: Minimal SystemVerilog counter used to test the CI/CD template flow
+
+filesets:
+  rtl:
+    files:
+      - rtl/counter.sv
+    file_type: systemVerilogSource
+
+  tb:
+    files:
+      - tb/tb_counter.cc
+    file_type: cppSource
+
+targets:
+  sim:
+    default_tool: verilator
+    filesets:
+      - rtl
+      - tb
+    toplevel: counter
+    tools:
+      verilator:
+        mode: cc
+        verilator_options:
+          - --exe
+          - --build
+          - -Wall

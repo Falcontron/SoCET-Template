@@ -76,4 +76,5 @@ WORKDIR /work
 CMD ["/bin/bash"]
 
 
-# opensta for timing and power
+# opensta for timing and power, svlinty and verible
+# pruduce an executable thats downloadable as an artifact

@@ -1,3 +1,0 @@
-parameter-name-style=localparam_style:CamelCase|ALL_CAPS
--explicit-function-lifetime
--explicit-task-lifetime

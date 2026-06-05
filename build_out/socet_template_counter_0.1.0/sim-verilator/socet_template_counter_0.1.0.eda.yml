@@ -1,0 +1,29 @@
+version: 0.2.1
+name: socet_template_counter_0.1.0
+toplevel: counter
+dependencies:
+  socet:template:counter:0.1.0: []
+cores:
+  socet:template:counter:0.1.0:
+    core_file: ../../../counter.core
+    dependencies: []
+    license: null
+parameters: {}
+tool_options:
+  verilator:
+    mode: cc
+    verilator_options:
+    - --exe
+    - --build
+    - -Wall
+filters: []
+flow_options: {}
+hooks: {}
+files:
+- file_type: systemVerilogSource
+  name: src/socet_template_counter_0.1.0/rtl/counter.sv
+  core: socet:template:counter:0.1.0
+- file_type: cppSource
+  name: src/socet_template_counter_0.1.0/tb/tb_counter.cc
+  core: socet:template:counter:0.1.0
+vpi: []

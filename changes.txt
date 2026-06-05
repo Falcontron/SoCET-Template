@@ -1,7 +1,0 @@
-
-
-Error:  /home/asicfab/a/yu1472/synopsys/AFT-dev/gpio/src/gpio.sv:99: symbol BUS_DATA_WIDTH must be a constant or parameter. (VER-260)
-Error:  /home/asicfab/a/yu1472/synopsys/AFT-dev/gpio/src/gpio.sv:99: Constant expression too complex. (ELAB-937)
-edited gpio.sv BUS_DATA_WIDTH to be 32 according to bus_protocol_if in bus-components/generic/bus_protocol_if.svh
-
-

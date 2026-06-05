@@ -1,2 +1,0 @@
-# UVM Testbench for PWM
-

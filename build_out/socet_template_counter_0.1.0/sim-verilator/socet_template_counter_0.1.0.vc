@@ -1,0 +1,6 @@
+--Mdir .
+--cc
+src/socet_template_counter_0.1.0/rtl/counter.sv
+--top-module counter
+--exe
+src/socet_template_counter_0.1.0/tb/tb_counter.cc
