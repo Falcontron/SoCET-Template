@@ -36,6 +36,7 @@ RUN apt-get update && apt-get install -y \
     tcl-dev \
     libreadline-dev \
     libeigen3-dev \
+    libgtest-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Build known-good Verilator from source instead of using apt verilator.
