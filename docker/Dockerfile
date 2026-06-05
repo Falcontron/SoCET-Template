@@ -31,6 +31,10 @@ RUN apt-get update && apt-get install -y \
     cabal-install \
     alex \
     happy \
+    cmake \
+    swig \
+    tcl-dev \
+    libreadline-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Build known-good Verilator from source instead of using apt verilator.
@@ -62,6 +66,18 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal && \
     cp /opt/cargo/bin/svlint /usr/local/bin/svlint && \
     svlint --version && \
     rm -rf /opt/cargo/registry /opt/cargo/git
+
+# Build OpenSTA from source.
+RUN git clone --recursive https://github.com/The-OpenROAD-Project/OpenSTA.git /opt/OpenSTA-src && \
+    cd /opt/OpenSTA-src && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make -j"$(nproc)" && \
+    make install && \
+    sta -version && \
+    cd / && \
+    rm -rf /opt/OpenSTA-src
 
 # Build sv2v from source.
 RUN git clone https://github.com/zachjs/sv2v.git /opt/sv2v-src && \
