@@ -37,8 +37,16 @@ RUN apt-get update && apt-get install -y \
     libreadline-dev \
     libeigen3-dev \
     libgtest-dev \
-    libcudd-dev \
     && rm -rf /var/lib/apt/lists/*
+
+# Build CUDD from source for OpenSTA.
+RUN git clone https://github.com/ivmai/cudd.git /opt/cudd-src && \
+    cd /opt/cudd-src && \
+    ./configure --prefix=/opt/cudd --enable-shared --enable-obj && \
+    make -j"$(nproc)" && \
+    make install && \
+    cd / && \
+    rm -rf /opt/cudd-src
 
 # Build OpenSTA from source first so OpenSTA failures appear early.
 RUN git clone --recursive https://github.com/The-OpenROAD-Project/OpenSTA.git /opt/OpenSTA-src && \
