@@ -31,8 +31,6 @@ RUN apt-get update && apt-get install -y \
     cabal-install \
     alex \
     happy \
-    cargo \
-    rustc \
     && rm -rf /var/lib/apt/lists/*
 
 # Build known-good Verilator from source instead of using apt verilator.
@@ -53,9 +51,16 @@ RUN curl -L -o /tmp/verible.tar.gz \
     tar -xzf /tmp/verible.tar.gz -C /opt/verible --strip-components=1 && \
     rm /tmp/verible.tar.gz
 
-# Install svlint.
-RUN cargo install svlint && \
-    cp /root/.cargo/bin/svlint /usr/local/bin/svlint && \
+    
+ARG SVLINT_VERSION=v0.9.3
+
+# Install svlint from prebuilt release.
+RUN curl -L -o /tmp/svlint.tar.gz \
+    "https://github.com/dalance/svlint/releases/download/${SVLINT_VERSION}/svlint-x86_64-unknown-linux-gnu.tar.gz" && \
+    tar -xzf /tmp/svlint.tar.gz -C /tmp && \
+    find /tmp -type f -name svlint -exec cp {} /usr/local/bin/svlint \; && \
+    chmod +x /usr/local/bin/svlint && \
+    rm -rf /tmp/svlint* && \
     svlint --version
 
 # Build sv2v from source.
@@ -81,3 +86,6 @@ ENV PYTHONPATH=""
 WORKDIR /work
 
 CMD ["/bin/bash"]
+
+# opensta for timing and power, svlint and verible
+# pruduce an executable thats downloadable as an artifact
