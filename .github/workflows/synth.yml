@@ -8,7 +8,7 @@ on:
 
 jobs:
   synth:
-    name: Smoke Synthesis
+    name: Library-Mapped Synthesis and Reports
     runs-on: ubuntu-latest
 
     container:
@@ -25,6 +25,7 @@ jobs:
           verilator --version
           sv2v --version
           yosys -V
+          sta -version
 
       - name: Run setup
         run: |
@@ -36,17 +37,25 @@ jobs:
           export PYTHONPATH=""
           ./build.sh
 
-      - name: Run smoke synthesis
+      - name: Run library-mapped synthesis and reports
         run: |
           export PYTHONPATH=""
           ./synth.sh
 
-      - name: Upload synthesis reports
+      - name: Upload synthesis, timing, and power reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: aft-synth-out
-          path: synth_out/
-          if-no-files-found: error
+          name: aft-synth-reports
+          path: |
+            synth_out/
+          if-no-files-found: warn
 
-
-# docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/work" -w /work ghcr.io/falcontron/socet-template-ci:latest bash -lc 'git config --global --add safe.directory /work && export PYTHONPATH="" && ./setup.sh && ./build.sh && ./synth.sh'
+# Local reproduction:
+#
+# docker run --rm \
+#   --user "$(id -u):$(id -g)" \
+#   -v "$PWD:/work" \
+#   -w /work \
+#   ghcr.io/falcontron/socet-template-ci:latest \
+#   bash -lc 'git config --global --add safe.directory /work && export PYTHONPATH="" && ./setup.sh && ./build.sh && ./synth.sh'

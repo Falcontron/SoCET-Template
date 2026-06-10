@@ -7,10 +7,21 @@ GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m'
 
-info_print()    { echo -e "${BLUE}$1${NC}"; }
-error_print()   { echo -e "${RED}ERROR: $1${NC}" >&2; }
-success_print() { echo -e "${GREEN}$1${NC}"; }
-warn_print()    { echo -e "${YELLOW}WARNING: $1${NC}"; }
+info_print() {
+    echo -e "${BLUE}$1${NC}"
+}
+
+error_print() {
+    echo -e "${RED}ERROR: $1${NC}" >&2
+}
+
+success_print() {
+    echo -e "${GREEN}$1${NC}"
+}
+
+warn_print() {
+    echo -e "${YELLOW}WARNING: $1${NC}"
+}
 
 if [ ! -f "./config.env" ]; then
     error_print "config.env not found"
@@ -69,10 +80,54 @@ install_fusesoc_libraries() {
     done < "$lib_file"
 }
 
+download_asic_libs() {
+    local lib_dir="flow/lib"
+    local liberty_file="$lib_dir/NangateOpenCellLibrary_typical.lib"
+    local liberty_url="https://raw.githubusercontent.com/The-OpenROAD-Project/OpenROAD-flow-scripts/master/flow/platforms/nangate45/lib/NangateOpenCellLibrary_typical.lib"
+    local tmp_file
+
+    mkdir -p "$lib_dir"
+
+    if [ -f "$liberty_file" ]; then
+        info_print "ASIC Liberty file already exists: $liberty_file"
+        return 0
+    fi
+
+    check_tool curl
+
+    tmp_file="$(mktemp)"
+
+    info_print "Downloading Nangate45 Liberty file"
+    info_print "Source: $liberty_url"
+    info_print "Destination: $liberty_file"
+
+    if ! curl -L --fail --retry 3 --retry-delay 2 -o "$tmp_file" "$liberty_url"; then
+        rm -f "$tmp_file"
+        error_print "Failed to download Nangate45 Liberty file"
+        exit 1
+    fi
+
+    if [ ! -s "$tmp_file" ]; then
+        rm -f "$tmp_file"
+        error_print "Downloaded Nangate45 Liberty file is empty"
+        exit 1
+    fi
+
+    if ! grep -q "library *(NangateOpenCellLibrary)" "$tmp_file"; then
+        rm -f "$tmp_file"
+        error_print "Downloaded file does not look like NangateOpenCellLibrary_typical.lib"
+        exit 1
+    fi
+
+    mv "$tmp_file" "$liberty_file"
+    success_print "Downloaded ASIC Liberty file: $liberty_file"
+}
+
 apply_patch() {
     local repo_dir="$1"
     local patch_file="$2"
     local repo_name
+
     repo_name=$(basename "$repo_dir")
 
     if [ ! -d "$repo_dir" ]; then
@@ -172,6 +227,7 @@ main() {
     fi
 
     install_fusesoc_libraries
+    download_asic_libs
     apply_patches_from_list
     run_prebuild_config
     generate_version_header
